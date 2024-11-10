@@ -1,8 +1,10 @@
 import sys
 from pathlib import Path
+from RBT import RedBlackTree
 
 if __name__ == "__main__":
     file_name = sys.argv[1]
+    redBlackTree = None
 
     if Path(file_name).is_file():
         inp_file = open(file_name,"r+")
