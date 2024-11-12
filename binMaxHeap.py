@@ -106,3 +106,7 @@ class MaxHeap:
         if largest != index:
             self.swap(index, largest)
             self.heapifyDown(largest)
+    
+    # function to return length of current waiting list
+    def lengthofWaitlist(self):
+        return self.size

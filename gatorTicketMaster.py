@@ -4,6 +4,7 @@ import sys
 from pathlib import Path
 from RBT import RedBlackTree
 from binMinHeap import MinHeap
+from binMaxHeap import MaxHeap
 
 if __name__ == "__main__":
     file_name = sys.argv[1]
@@ -24,12 +25,18 @@ if __name__ == "__main__":
                 command = commands[i].split('(')
                 command = command[1].split(')')
                 n = int(command[0])
-                out_file.write("Initializing " + str(n))
+                out_file.write(str(n) + " Seats are made available for reservation")
+
+                # created 1-n seats
                 availableSeats = MinHeap(n)
-                waitingList = MaxHeap(0)
+
+                # initialize waiting list, which is empty at the start
+                waitingList = MaxHeap()
+
                 # print(availableSeats.storage)
             elif commands[i][:9] == "Available":
-                out_file.write("Available")
+                print("Total Seats Available : " + str(availableSeats.numberOfAvailableSeats()) + ", Waitlist : " + str(waitingList.lengthofWaitlist()))
+                out_file.write("Total Seats Available : " + str(availableSeats.numberOfAvailableSeats()) + ", Waitlist : " + str(waitingList.lengthofWaitlist()))
             elif commands[i][:7] == "Reserve":
                 command = commands[i].split('(')
                 command = command[1].split(')')
