@@ -67,7 +67,8 @@ class MinHeap:
     def insert(self, data):
         if self.isFull():
             raise("Heap is Full")
-        self.seats[self.size] = data
+        # print(len(self.seats), self.size)
+        self.seats.append(data)
         self.size += 1
         # now we need to ensure that data is sorted in right position
         self.heapifyUp(self.size - 1)

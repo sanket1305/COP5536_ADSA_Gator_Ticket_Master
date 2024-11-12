@@ -2,7 +2,7 @@
 
 import sys
 from pathlib import Path
-from RBT import RedBlackTree
+from my_rbt import RedBlackTree
 from binMinHeap import MinHeap
 from binMaxHeap import MaxHeap
 
@@ -65,9 +65,34 @@ if __name__ == "__main__":
                 command = commands[i].split('(')
                 command = command[1].split(')')
                 command = command[0].split(',')
-                seatId = command[0]
-                userId = command[1].strip()
-                out_file.write("Cancelling seatID: " + seatId + " with userId: " + userId)
+                seatId = int(command[0])
+                userId = int(command[1].strip())
+
+                # search for userID, as we have userID as key in RBT
+                mapping = seatMapping.search(userId)
+
+                # seatMapping._inorder_traversal(seatMapping.root)
+                # print(mapping)
+
+                # if there is no seat mapping for the user
+                if mapping.userId == None:
+                    out_file.write("User " + str(userId)  + " has no reservation to cancel")
+                elif mapping.seatId != seatId: # if user mapping exists but not with given seat ID
+                    out_file.write("User " + str(userId) + " has no reservation for seat " + str(seatID) + " to cancel")
+                else:
+                    seatMapping._inorder_traversal(seatMapping.root)
+                    # user has the mapping to given seat
+                    # delete that mapping from RBT
+                    seatMapping.delete(userId)
+
+                    # insert the vacant seat back into the heap
+                    availableSeats.insert(mapping.seatId)
+
+                    out_file.write("User " + str(userId) + " canceled their reservation")
+                    seatMapping._inorder_traversal(seatMapping.root)
+                    # User <userID> canceled their reservation
+
+                # out_file.write("Cancelling seatId: " + seatId + " with userId: " + userId)
             elif commands[i][:12] == "ExitWaitlist":
                 command = commands[i].split('(')
                 command = command[1].split(')')
