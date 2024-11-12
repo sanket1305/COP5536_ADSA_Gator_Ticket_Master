@@ -2,8 +2,9 @@ class RBNode:
     # constructor
     # left right child, parent pointer
     # default color of node has to be red, as new node inserted into tree will be red
-    def __init__(self, value, color='red'):
-        self.value = value
+    def __init__(self, userId, seatId, color='red'):
+        self.userId = userId
+        self.seatId = seatId
         self.color = color
         self.left = None
         self.right = None
@@ -43,27 +44,27 @@ class RedBlackTree:
     def __init__(self):
         self.root = None
 
-    # function to search a value in RB Tree
-    def search(self, value):
+    # function to search a userId in RB Tree
+    def search(self, userId):
         # start search from root node
         curr_node = self.root
 
         # keep trversing until we reach bottom of tree (via any branch)
         while curr_node is not None:
-            if value == curr_node.value:
+            if userId == curr_node.userId:
                 return curr_node
-            elif value < curr_node.value:
+            elif userId < curr_node.userId:
                 curr_node = curr_node.left
             else:
                 curr_node = curr_node.right
         
-        # return None, as we reached end of tree and value is not found
+        # return None, as we reached end of tree and userId is not found
         return None
 
     # function to insert a node in RB Tree, similar to BST insertion
-    def insert(self, value):
+    def insert(self, userId, seatId):
         # Regular insertion
-        new_node = RBNode(value)
+        new_node = RBNode(userId, seatId)
 
         # if tree is empty, mark the new_node as root
         if self.root is None:
@@ -73,10 +74,10 @@ class RedBlackTree:
             curr_node = self.root
 
             while True:
-                # if new value is less than curr_node value, 
+                # if new userId is less than curr_node userId, 
                 # then traverse to left subtree
                 # else traverse to right subtree
-                if value < curr_node.value:
+                if userId < curr_node.userId:
                     # if left child is None, then make new_node as left_child
                     # update, the pointers and break as we have inserted the node
                     if curr_node.left is None:
@@ -182,10 +183,10 @@ class RedBlackTree:
                     self.rotate_left(new_node.grandparent())
         self.root.color = 'black'
 
-    # function to delete a value from RB Tree
-    def delete(self, value):
+    # function to delete a userId from RB Tree
+    def delete(self, userId):
         # gives the pointer to the node, which is to be deleted
-        node_to_remove = self.search(value)
+        node_to_remove = self.search(userId)
 
         # node not found, so nothing to delete
         if node_to_remove is None:
@@ -201,7 +202,7 @@ class RedBlackTree:
             # if degree of del_node == 2, then remember we can't remove degree 2 node directly in BST or RBT
             # so replace, del_node <=> min of right subtree
             successor = self._find_min(node_to_remove.right)
-            node_to_remove.value = successor.value
+            node_to_remove.userId = successor.userId
             
             # now repeat the processor for node with degree 1
             # note, we have traveresed only left in _find_min
@@ -325,7 +326,7 @@ class RedBlackTree:
         if new_node is not None:
             new_node.parent = old_node.parent
 
-    # function to find node with minimum value in a subtree
+    # function to find node with minimum userId in a subtree
     def _find_min(self, node):
         # as we are finding min of right subtree
         # we will find it in the last node of left most branch
@@ -338,19 +339,19 @@ class RedBlackTree:
     def _inorder_traversal(self, node):
         if node is not None:
             self._inorder_traversal(node.left)
-            print(node.value, end=" ")
+            print(node.userId, " ", node.seatId, end=" ")
             self._inorder_traversal(node.right)
 
 
 # Example driver code
 # if __name__ == "__main__":
 #     tree = RedBlackTree()
-#     tree.insert(10)
-#     tree.insert(20)
-#     tree.insert(30)
-#     tree.insert(40)
-#     tree.insert(50)
-#     tree.insert(25)
+#     tree.insert(10, 1)
+#     tree.insert(20, 2)
+#     tree.insert(30, 3)
+#     tree.insert(40, 4)
+#     tree.insert(50, 5)
+#     tree.insert(25, 6)
 
 #     print("Inorder traversal of the Red-Black Tree:")
 #     tree._inorder_traversal(tree.root)

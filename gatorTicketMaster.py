@@ -8,7 +8,7 @@ from binMaxHeap import MaxHeap
 
 if __name__ == "__main__":
     file_name = sys.argv[1]
-    redBlackTree = None
+    seatMapping = RedBlackTree()
 
     if Path(file_name).is_file():
         inp_file = open(file_name,"r+")
@@ -41,9 +41,26 @@ if __name__ == "__main__":
                 command = commands[i].split('(')
                 command = command[1].split(')')
                 command = command[0].split(',')
-                userId = command[0]
-                priority = command[1].strip()
-                out_file.write("Reserving userID: " + userId + " with priority: " + priority)
+                userId = int(command[0])
+                priority = int(command[1].strip())
+
+                # check if seat is avaiable
+                isSeatAvailable = False
+                if availableSeats.numberOfAvailableSeats():
+                    isSeatAvailable = True
+                
+                # if seat is not avilable, then put user in the waitlist
+                # else assign the lowest availablt seat to the user
+                if not isSeatAvailable:
+                    print("sorry, can't do the reservation")
+                else:
+                    # get lowest seat numer available, which is unassigned
+                    seatId = availableSeats.removeMin()
+                    seatMapping.insert(userId, seatId)
+                    # uncomment below line if you want to see the whole assignment after each mapping
+                    # seatMapping._inorder_traversal(seatMapping.root)
+                    out_file.write("User " + str(userId) + " reserved seat " + str(seatId))
+                # out_file.write("Reserving userID: " + userId + " with priority: " + priority)
             elif commands[i][:6] == "Cancel":
                 command = commands[i].split('(')
                 command = command[1].split(')')

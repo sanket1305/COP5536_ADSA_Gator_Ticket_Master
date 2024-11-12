@@ -29,14 +29,14 @@ class MinHeap:
     
     # function to check if index has left child
     def hasLeftChild(self, index):
-        childIndex = self.getLeftChild(index)
+        childIndex = self.getLeftChildIndex(index)
         if childIndex < self.size:
             return True
         return False
     
     # function to check if index has right child
     def hasRightChild(self, index):
-        childIndex = self.getRightChild(index)
+        childIndex = self.getRightChildIndex(index)
         if childIndex < self.size:
             return True
         return False
@@ -46,11 +46,11 @@ class MinHeap:
         return self.seats[self.getParentIndex(index)]
     
     # def leftChild(index)... to get left child value
-    def leftChild(index):
+    def leftChild(self, index):
         return self.seats[self.getLeftChildIndex(index)]
 
     # def rightChild(index)... to get right child value
-    def rightChild(index):
+    def rightChild(self, index):
         return self.seats[self.getRightChildIndex(index)]
 
     # function to check if the heap is full
@@ -89,6 +89,7 @@ class MinHeap:
 
         # reduce the size by 1, as we have removed min
         self.size -= 1
+        del self.seats[self.size] # remove last element
 
         # recursively call heap function to satisfy binary min heap property
         self.heapifyDown(0)
