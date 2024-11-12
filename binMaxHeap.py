@@ -26,14 +26,14 @@ class MaxHeap:
     
     # function to check if index has left child
     def hasLeftChild(self, index):
-        childIndex = self.getLeftChild(index)
+        childIndex = self.getLeftChildIndex(index)
         if childIndex < self.size:
             return True
         return False
     
     # function to check if index has right child
     def hasRightChild(self, index):
-        childIndex = self.getRightChild(index)
+        childIndex = self.getRightChildIndex(index)
         if childIndex < self.size:
             return True
         return False
@@ -55,10 +55,10 @@ class MaxHeap:
         self.line[index1], self.line[index2] = self.line[index2], self.line[index1]
     
     # function to insert data into the heap
-    def insert(self, priority):
+    def insert(self, userId, priority):
         # self.line[self.size] = data
         current_time_ns = time.time_ns()
-        self.line.append([priority, current_time_ns])
+        self.line.append([priority, current_time_ns, userId])
         self.size += 1
         # now we need to ensure that data is sorted in right position
         self.heapifyUp(self.size - 1)
