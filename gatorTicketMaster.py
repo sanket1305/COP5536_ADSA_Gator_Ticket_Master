@@ -1,3 +1,5 @@
+# scenarios remaining: if for a person, prioeity is updated, should we update its timestamp as well?
+
 import sys
 from pathlib import Path
 from RBT import RedBlackTree
@@ -24,6 +26,7 @@ if __name__ == "__main__":
                 n = int(command[0])
                 out_file.write("Initializing " + str(n))
                 availableSeats = MinHeap(n)
+                waitingList = MaxHeap(0)
                 # print(availableSeats.storage)
             elif commands[i][:9] == "Available":
                 out_file.write("Available")
