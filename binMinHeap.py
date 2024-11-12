@@ -39,15 +39,15 @@ class MinHeap:
     
     # def parent(index)... to get parent value
     def parent(self, index):
-        return self.storage[self.getLeftChild(index)]
+        return self.storage[self.getParentIndex(index)]
     
     # def leftChild(index)... to get left child value
     def leftChild(index):
-        return self.storage[self.getLeftChild(index)]
+        return self.storage[self.getLeftChildIndex(index)]
 
     # def rightChild(index)... to get right child value
     def rightChild(index):
-        return self.storage[self.getRightChild(index)]
+        return self.storage[self.getRightChildIndex(index)]
 
     # function to check if the heap is full
     def isFull(self):
@@ -70,8 +70,7 @@ class MinHeap:
     
     # function to sort the data in right position
     def heapifyUp(self, index):
-        # index = self.size - 1
-        if(self.hasParent[index] and self.parent(index) > self.storage[index]):
+        if(self.hasParent(index) and self.parent(index) > self.storage[index]):
             self.swap(self.getParentIndex(index), index)
             self.heapifyUp(self.getParentIndex(index))
     

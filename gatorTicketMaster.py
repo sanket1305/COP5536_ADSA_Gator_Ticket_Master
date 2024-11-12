@@ -1,6 +1,7 @@
 import sys
 from pathlib import Path
 from RBT import RedBlackTree
+from binMinHeap import MinHeap
 
 if __name__ == "__main__":
     file_name = sys.argv[1]
@@ -17,11 +18,13 @@ if __name__ == "__main__":
         for i in range(0, num_commands):
             if i != 0:
                 out_file.write("\n")
-            if commands[i][:10] == "Initialize":
+            if commands[i][:10] == "Initialize": # completed
                 command = commands[i].split('(')
                 command = command[1].split(')')
-                n = command[0]
-                out_file.write("Initializing " + n)
+                n = int(command[0])
+                out_file.write("Initializing " + str(n))
+                availableSeats = MinHeap(n)
+                # print(availableSeats.storage)
             elif commands[i][:9] == "Available":
                 out_file.write("Available")
             elif commands[i][:7] == "Reserve":
