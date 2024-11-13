@@ -193,9 +193,9 @@ class RedBlackTree:
         return self._find_node(self.root, userId)
 
     def _find_node(self, node, userId):
-        print(userId, type(userId), node.userId, type(node.userId))
+        # print(userId, type(userId), node.userId, type(node.userId))
         while node != self.NIL and userId != node.userId:
-            print("sank")
+            # print("sank")
             if userId < node.userId:
                 node = node.left
             else:

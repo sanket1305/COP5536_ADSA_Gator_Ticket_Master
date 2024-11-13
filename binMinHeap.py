@@ -128,3 +128,4 @@ class MinHeap:
         for seat in range(self.maxSize + 1, self.maxSize + extraSeats + 1):
             self.seats.append(seat)
         self.maxSize += extraSeats
+        self.size += extraSeats

@@ -4,7 +4,7 @@ class MaxHeap:
     def __init__(self):
         # each element in line contains [priority, timestamp, userId]
         self.line = []   # to store all the elements
-        self.size = 0                   # initial size of heap (i.e. 0)
+        self.line_size = 0                   # initial line_size of heap (i.e. 0)
     
     # function to get parent index
     def getParentIndex(self, index):
@@ -28,14 +28,14 @@ class MaxHeap:
     # function to check if index has left child
     def hasLeftChild(self, index):
         childIndex = self.getLeftChildIndex(index)
-        if childIndex < self.size:
+        if childIndex < self.line_size:
             return True
         return False
     
     # function to check if index has right child
     def hasRightChild(self, index):
         childIndex = self.getRightChildIndex(index)
-        if childIndex < self.size:
+        if childIndex < self.line_size:
             return True
         return False
     
@@ -44,11 +44,11 @@ class MaxHeap:
         return self.line[self.getParentIndex(index)]
     
     # def leftChild(index)... to get left child value
-    def leftChild(index):
+    def leftChild(self, index):
         return self.line[self.getLeftChildIndex(index)]
 
     # def rightChild(index)... to get right child value
-    def rightChild(index):
+    def rightChild(self, index):
         return self.line[self.getRightChildIndex(index)]
     
     # function to swap the values at 2 indexes
@@ -57,33 +57,43 @@ class MaxHeap:
     
     # function to insert data into the heap
     def insert(self, userId, priority):
-        # self.line[self.size] = data
+        # self.line[self.line_size] = data
         current_time_ns = time.time_ns()
         self.line.append([priority, current_time_ns, userId])
-        self.size += 1
+        self.line_size += 1
         # now we need to ensure that data is sorted in right position
-        self.heapifyUp(self.size - 1)
+        self.heapifyUp(self.line_size - 1)
     
     # function to sort the data in right position
     def heapifyUp(self, index):
+        print("insert done... heapify will resume", self.line)
+        print(self.line_size, "Hippooooooo", index)
+        print("has parent", self.hasParent(index))
+        if self.hasParent(index):
+            print("parent priority", self.parent(index)[0])
+            print("current index priority", self.line[index][0])
+            print("is it a tie??")
+            print("parent timestamp", self.parent(index)[1])
+            print("current timestamp", self.line[index][1])
         # check if parent exists
         # check if parent's priority is less than curr index, then we need swap
         # if parent's priority == index's priority, but parent came after index, then we need swap
-        if(self.hasParent(index) and (self.parent(index)[0] < self.line[index][0] or (self.parent(index)[0] == self.line[index][0] and self.parent(index)[1] > self.parent(index)[1]))):
+        if(self.hasParent(index) and (self.parent(index)[0] < self.line[index][0] or (self.parent(index)[0] == self.line[index][0] and self.parent(index)[1] > self.line[index][1]))):
             self.swap(self.getParentIndex(index), index)
             self.heapifyUp(self.getParentIndex(index))
     
     # function to remove min element from the binary heap
     def removeMax(self):
-        if self.size == 0:
+        if self.line_size == 0:
             raise("Empty Heap")
         data = self.line[0]
 
         # replace the root, with the last element in heap array
-        self.line[0] = self.line[self.size - 1]
+        self.line[0] = self.line[self.line_size - 1]
 
-        # reduce the size by 1, as we have removed min
-        self.size -= 1
+        # reduce the line_size by 1, as we have removed min
+        self.line_size -= 1
+        self.line.pop(-1)
 
         # recursively call heap function to satisfy binary min heap property
         self.heapifyDown(0)
@@ -110,7 +120,7 @@ class MaxHeap:
     
     # function to return length of current waiting list
     def lengthofWaitlist(self):
-        return self.size
+        return self.line_size
     
     # function to remove a user from wait list
     # binary heap only ensures that top element is min/max
@@ -118,12 +128,12 @@ class MaxHeap:
     # hence performing linear search directly
     def removeUser(self, userId):
         index = 0
-        og_size = self.size
-        while(index < self.size):
-            if self.line[i][2] == userId:
-                self.line[i] = self.line[self.size - 1]
-                self.size -= 1
-                self.heapifyDown(i)
+        og_size = self.line_size
+        while(index < self.line_size):
+            if self.line[index][2] == userId:
+                self.line[index] = self.line[self.line_size - 1]
+                self.line_size -= 1
+                self.heapifyDown(index)
                 break
             index += 1
         if og_size == index:
