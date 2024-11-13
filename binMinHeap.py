@@ -118,3 +118,13 @@ class MinHeap:
     # function to print the list of available seats
     def numberOfAvailableSeats(self):
         return self.size
+    
+    # function to add seats
+    def addSeats(self, extraSeats):
+        # existing seats will be having smaller IDs than new ones
+        # this is mean heap
+        # so no new seatId would go up the tree
+        # hence directly appending the new seats into the array
+        for seat in range(self.maxSize + 1, self.maxSize + extraSeats + 1):
+            self.seats.append(seat)
+        self.maxSize += extraSeats

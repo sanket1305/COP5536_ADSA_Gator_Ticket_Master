@@ -1,5 +1,3 @@
-# scenarios remaining: if for a person, priority is updated, should we update its timestamp as well?
-
 import sys
 from pathlib import Path
 from my_rbt import RedBlackTree
@@ -50,7 +48,7 @@ class GatorTicketMaster:
             out_file.write("User " + str(userId) + " reserved seat " + str(seatId))
     
     def cancel(self, userId, seatId):
-        # search for userID, as we have userID as key in RBT
+        # search for userId, as we have userId as key in RBT
         mapping = self.seatMapping.search(userId)
 
         # if there is no seat mapping for the user
@@ -64,7 +62,7 @@ class GatorTicketMaster:
             # delete that mapping from RBT
             self.seatMapping.delete(userId)
 
-            out_file.write("User " + str(userId) + " canceled their reservation\n")
+            out_file.write("User " + str(userId) + " canceled their reservation")
 
             # insert the vacant seat back into the heap
             self.availableSeats.insert(mapping.seatId)
@@ -78,7 +76,31 @@ class GatorTicketMaster:
                 self.reserve(new_user, new_user_priority)
                 # out_file.write("User " + str(new_user) + " reserved seat " + str(mapping.seatId))
 
-            # self.seatMapping._inorder_traversal(self.seatMapping.root)                
+            # self.seatMapping._inorder_traversal(self.seatMapping.root)  
+
+    def exitWaitList(self, userId):
+        if self.waitingList.removeUser(userId):
+            out_file.write("User " + userId + " is removed from the waiting list")
+        else:
+            out_file.write("User " + userId + " is not in waitlist")
+
+    def addSeats(self, extraSeats):
+        if seat_count.isdigit():
+            seat_count = int(seat_count)
+            if seat_count < 1:
+                out_file.write("Invalid input. Please provide a valid number of seats.")
+            else:
+                self.availableSeats.addSeats(seat_count)
+
+                # check if there is any user in waitlist
+                if self.waitingList.size > 0:
+                    while self.waitingList.size > 0 and self.availableSeats.isSeatAvailable():
+                        curr_user = self.waitingList.removeMax()
+                        gatorTicketMaster.reserve(curr_user[2], curr_user[0])
+                else:
+                    out_file.write("Additional " + str(seat_count) + " Seats are made available for reservation")
+        else:
+            out_file.write("Invalid input. Please provide a valid number of seats.")
 
 if __name__ == "__main__":
     gatorTicketMaster = GatorTicketMaster()
@@ -134,7 +156,7 @@ if __name__ == "__main__":
                 #     out_file.write("User " + str(userId) + " reserved seat " + str(seatId))
                 
                 gatorTicketMaster.reserve(userId, priority)
-                # out_file.write("Reserving userID: " + userId + " with priority: " + priority)
+                # out_file.write("Reserving userId: " + userId + " with priority: " + priority)
             elif commands[i][:6] == "Cancel": 
                 command = commands[i].split('(')
                 command = command[1].split(')')
@@ -142,7 +164,7 @@ if __name__ == "__main__":
                 seatId = int(command[0])
                 userId = int(command[1].strip())
 
-                # # search for userID, as we have userID as key in RBT
+                # # search for userId, as we have userId as key in RBT
                 # mapping = seatMapping.search(userId)
 
                 # # if there is no seat mapping for the user
@@ -168,15 +190,17 @@ if __name__ == "__main__":
 
                     
                 #     seatMapping._inorder_traversal(seatMapping.root)
-                #     # User <userID> canceled their reservation
+                #     # User <userId> canceled their reservation
                 
                 gatorTicketMaster.cancel(userId, seatId)
                 # out_file.write("Cancelling seatId: " + seatId + " with userId: " + userId)
             elif commands[i][:12] == "ExitWaitlist":
                 command = commands[i].split('(')
                 command = command[1].split(')')
-                userId = command[0]
-                out_file.write("User: " + seatId + " leaving")
+                userId = int(command[0])
+
+                gatorTicketMaster.exitWaitList(userId)
+                # out_file.write("User: " + seatId + " leaving")
             elif commands[i][:14] == "UpdatePriority":
                 command = commands[i].split('(')
                 command = command[1].split(')')
@@ -188,7 +212,24 @@ if __name__ == "__main__":
                 command = commands[i].split('(')
                 command = command[1].split(')')
                 seat_count = command[0]
-                out_file.write("Addig more seats: " + seat_count)
+
+                gatorTicketMaster.addSeats(seat_count)
+                # if seat_count.isdigit():
+                #     seat_count = int(seat_count)
+                #     if seat_count < 1:
+                #         out_file.write("Invalid input. Please provide a valid number of seats.")
+                #     else:
+                #         self.availableSeats.addSeats(seat_count)
+
+                #         # check if there is any user in waitlist
+                #         if self.waitingList.size > 0:
+                #             while self.waitingList.size > 0 and self.availableSeats.isSeatAvailable():
+                #                 curr_user = self.waitingList.removeMax()
+                #                 gatorTicketMaster.reserve(curr_user[2], curr_user[0])
+                #         else:
+                #             out_file.write("Additional " + str(seat_count) + " Seats are made available for reservation")
+
+                # out_file.write("Addig more seats: " + seat_count)
             elif commands[i][:17] == "PrintReservations":
                 # current_assignment = [0]*(availableSeats.maxSize - availableSeats.size)
                 # print("balle", availableSeats.maxSize - availableSeats.size)

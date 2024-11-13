@@ -2,6 +2,7 @@ import time
 
 class MaxHeap:
     def __init__(self):
+        # each element in line contains [priority, timestamp, userId]
         self.line = []   # to store all the elements
         self.size = 0                   # initial size of heap (i.e. 0)
     
@@ -110,3 +111,21 @@ class MaxHeap:
     # function to return length of current waiting list
     def lengthofWaitlist(self):
         return self.size
+    
+    # function to remove a user from wait list
+    # binary heap only ensures that top element is min/max
+    # so searching for any other element in binary help would take O(n)
+    # hence performing linear search directly
+    def removeUser(self, userId):
+        index = 0
+        og_size = self.size
+        while(index < self.size):
+            if self.line[i][2] == userId:
+                self.line[i] = self.line[self.size - 1]
+                self.size -= 1
+                self.heapifyDown(i)
+                break
+            index += 1
+        if og_size == index:
+            return False
+        return True
