@@ -118,6 +118,67 @@ class GatorTicketMaster:
                     out_file.write("Additional " + str(seat_count) + " Seats are made available for reservation")
         else:
             out_file.write("Invalid input. Please provide a valid number of seats.")
+    
+    # function to handle releaseSeats call
+    def releaseSeats(self, userId1, userId2):
+        # for user in given range
+        for userId in range(userId1, userId2 + 1):
+            # check if userId is in waiting list, if it is remove it
+            if not self.waitingList.removeUser(userId):
+                # if userId is not in waiting list, check if it has seatMapping
+                # if does not, then given userId was never introduced during current execution, so ingore it
+                # if it does, then remove that seatMapping
+                node = self.seatMapping.search(userId)
+                if node.userId != None:
+                    self.seatMapping._delete_node(node)
+    
+    # function to handle printReservations call
+    def printReservations(self):
+        # get root node of RBT seat mapping
+        node = self.seatMapping.root
+
+        # array to store the mapping of seatId and userId
+        arr = []
+
+        # do inorder traversal to get all mappings
+        def inorderMaster(node):
+            if node is not None and node.userId is not None:
+                inorderMaster(node.left)
+                arr.append((node.seatId, node.userId))
+                inorderMaster(node.right)
+
+        # function call to inorder traversal method
+        inorderMaster(node)
+        arr.sort() # sorting array based on seatIds
+
+        # print all mappings sorted by seatIds
+        for index in range(len(arr)):
+            if index != 0:
+                out_file.write("\n")
+            out_file.write("[<" + str(arr[index][0]) + ">, <" + str(arr[index][1]) + ">]")
+        out_file.write("\n")
+    
+    # function to handle updatePriority call
+    def updatePriority(self, userId, priority):
+        # get waiting queue
+        waiting_queue = self.waitingList.line
+        # set user_found flag to false initially
+        # if found, set it to true
+        user_found = False
+
+        for index in range(self.waitingList.size):
+            # if user is found, set the flag, update the priority
+            # call heapifyDown from that index, to update the heap
+            if waiting_queue[index][2] == userId:
+                user_found = True
+                waiting_queue[index][0] = priority
+                self.waitingList.heapifyDown(index)
+        
+        # print output based on user_founf flag
+        if user_found:
+            out_file.print("User " + str(userId) + " priority has been updated to " + str(priority))
+        else:
+            out_file.print("User " + str(userId) + " priority is not updated")
 
 if __name__ == "__main__":
     # initialize the GetorTicketMaster class
@@ -178,9 +239,11 @@ if __name__ == "__main__":
                 command = commands[i].split('(')
                 command = command[1].split(')')
                 command = command[0].split(',')
-                userId = command[0]
-                new_priority = command[1].strip()
-                out_file.write("Updating priority for userId: " + userId + " New priority is: " + new_priority)
+                userId = int(command[0])
+                new_priority = int(command[1].strip())
+
+                gatorTicketMaster.updatePriority(userId, new_priority)
+                # out_file.write("Updating priority for userId: " + userId + " New priority is: " + new_priority)
             elif commands[i][:8] == "AddSeats":
                 command = commands[i].split('(')
                 command = command[1].split(')')
@@ -188,16 +251,31 @@ if __name__ == "__main__":
 
                 gatorTicketMaster.addSeats(seat_count)
             elif commands[i][:17] == "PrintReservations":
-                out_file.write("Printing reservations...")
+                # out_file.write("Printing reservations...")
+                gatorTicketMaster.printReservations()
             elif commands[i][:12] == "ReleaseSeats":
                 command = commands[i].split('(')
                 command = command[1].split(')')
                 command = command[0].split(',')
                 userId1 = command[0]
                 userId2 = command[1].strip()
+                
+                if not userId1.isdigit() or not userId2.isdigit():
+                    out_file.write("Invalid input. Please provide a valid range of users.")
+                else:
+                    userId1 = int(userId1)
+                    userId2 = int(userId2)
+
+                    if userId1 < 0 or userId2 < 0:
+                        out_file.write("Invalid input. Please provide a valid range of users.")
+                    else:
+                        gatorTicketMaster.releaseSeats(userId1, userId2)
                 out_file.write("Releasing seats in range: " + userId1 + " : " + userId2)
             elif commands[i][:4] == "Quit":
                 out_file.write("Program Terminated!!")
+
+                # To terminate the program
+                break
             else:
                 out_file.write("Invalid command")
         print()
