@@ -73,7 +73,7 @@ class MinHeap:
     # function to insert data into the heap
     def insert(self, data):
         if self.isFull():
-            raise("Heap is Full")
+            print("Heap is Full")
         
         # insert new/vacant seatId into heap at the end
         self.seats.append(data)

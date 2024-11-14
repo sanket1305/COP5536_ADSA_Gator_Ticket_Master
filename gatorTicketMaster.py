@@ -53,7 +53,7 @@ class GatorTicketMaster:
             self.seatMapping.insert(userId, seatId)
 
             # uncomment below line if you want to see the whole assignment after each mapping
-            # seatMapping._inorder_traversal(seatMapping.root)
+            # seatMapping.inorderTraversal(seatMapping.root)
 
             out_file.write("User " + str(userId) + " reserved seat " + str(seatId) + "\n")
     
@@ -132,7 +132,7 @@ class GatorTicketMaster:
                 node = self.seatMapping.search(userId)
                 if node.userId != None:
                     self.availableSeats.insert(node.seatId)
-                    self.seatMapping._delete_node(node)
+                    self.seatMapping.deleteNode(node)
         
         out_file.write("Reservations of the Users in the range [" + str(userId1) + ", " + str(userId2) + "] are released\n")
 
