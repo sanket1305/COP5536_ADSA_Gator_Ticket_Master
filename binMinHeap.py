@@ -5,22 +5,39 @@ class MinHeap:
             self.seats.append(i)
         self.maxSize = maxSize          # maximum capacity of the heap
         self.size = maxSize                   # initial size of heap (i.e. 0)
+
+    # function to check if the heap is full
+    # as we have fixed number of seats
+    # this function won't be there in waitlist heap
+    # as waitlist can be as long as it can
+    def isFull(self):
+        if self.size == self.maxSize:
+            return True
+        return False
+
+    # function to print the list of available seats
+    def numberOfAvailableSeats(self):
+        return self.size
+    
+    # function to exchangeIndexValues the values at 2 indexes
+    def exchangeIndexValues(self, index1, index2):
+        self.seats[index1], self.seats[index2] = self.seats[index2], self.seats[index1]
     
     # function to get parent index
-    def getParentIndex(self, index):
+    def calculateParentIndex(self, index):
         return (index - 1)//2
     
     # function to get left child
-    def getLeftChildIndex(self, index):
+    def calculateLeftChildIndex(self, index):
         return 2*index + 1
     
     # function to get right child
-    def getRightChildIndex(self, index):
+    def calculateRightChildIndex(self, index):
         return 2*index + 2
     
     # function to check if current index has parent
-    def hasParent(self, index):
-        parentIndex = self.getParentIndex(index)
+    def checkParent(self, index):
+        parentIndex = self.calculateParentIndex(index)
         if parentIndex >= 0:
             return True
         
@@ -29,8 +46,8 @@ class MinHeap:
         return False
     
     # function to check if index has left child
-    def hasLeftChild(self, index):
-        childIndex = self.getLeftChildIndex(index)
+    def checkLeftChild(self, index):
+        childIndex = self.calculateLeftChildIndex(index)
         if childIndex < self.size:
             return True
         
@@ -39,8 +56,8 @@ class MinHeap:
         return False
     
     # function to check if index has right child
-    def hasRightChild(self, index):
-        childIndex = self.getRightChildIndex(index)
+    def checkRightChild(self, index):
+        childIndex = self.calculateRightChildIndex(index)
         if childIndex < self.size:
             return True
         
@@ -50,26 +67,44 @@ class MinHeap:
     
     # def parent(index)... to get parent value
     def parent(self, index):
-        return self.seats[self.getParentIndex(index)]
+        return self.seats[self.calculateParentIndex(index)]
     
     # def leftChild(index)... to get left child value
     def leftChild(self, index):
-        return self.seats[self.getLeftChildIndex(index)]
+        return self.seats[self.calculateLeftChildIndex(index)]
 
     # def rightChild(index)... to get right child value
     def rightChild(self, index):
-        return self.seats[self.getRightChildIndex(index)]
+        return self.seats[self.calculateRightChildIndex(index)]
 
-    # function to check if the heap is full
-    def isFull(self):
-        if self.size == self.maxSize:
-            return True
-        return False
+    # function to sort the data in right position
+    def heapifyUp(self, index):
+        # keep comparing values with parent (until we reach the root)
+        # perform swapping if required (to satisfy mean Heap property)
+        # move one level up
+        if(self.checkParent(index) and self.parent(index) > self.seats[index]):
+            self.exchangeIndexValues(self.calculateParentIndex(index), index)
+            self.heapifyUp(self.calculateParentIndex(index))
     
-    # function to swap the values at 2 indexes
-    def swap(self, index1, index2):
-        self.seats[index1], self.seats[index2] = self.seats[index2], self.seats[index1]
-    
+    # function to heapify from top to down
+    def heapifyDown(self, index):
+        # consider current idnex as smallest
+        smallest = index
+
+        # check if left child has smaller value
+        if (self.checkLeftChild(index) and self.seats[smallest] > self.leftChild(index)):
+            smallest = self.calculateLeftChildIndex(index)
+        
+        # check if right child has smaller value
+        if (self.checkRightChild(index) and self.seats[smallest] > self.rightChild(index)):
+            smallest = self.calculateRightChildIndex(index)
+        
+        # check if the smallest is not current index
+        # perform exchangeIndexValues and recursivey call Heapify by traversing to bottom
+        if smallest != index:
+            self.exchangeIndexValues(index, smallest)
+            self.heapifyDown(smallest)
+
     # function to insert data into the heap
     def insert(self, data):
         if self.isFull():
@@ -81,15 +116,6 @@ class MinHeap:
 
         # now we need to ensure that data is sorted in right position
         self.heapifyUp(self.size - 1)
-    
-    # function to sort the data in right position
-    def heapifyUp(self, index):
-        # keep comparing values with parent (until we reach the root)
-        # perform swapping if required (to satisfy mean Heap property)
-        # move one level up
-        if(self.hasParent(index) and self.parent(index) > self.seats[index]):
-            self.swap(self.getParentIndex(index), index)
-            self.heapifyUp(self.getParentIndex(index))
     
     # function to remove min element from the binary heap
     def removeMin(self):
@@ -108,29 +134,6 @@ class MinHeap:
         # recursively call heap function to satisfy binary min heap property
         self.heapifyDown(0)
         return data
-    
-    # function to heapify from top to down
-    def heapifyDown(self, index):
-        # consider current idnex as smallest
-        smallest = index
-
-        # check if left child has smaller value
-        if (self.hasLeftChild(index) and self.seats[smallest] > self.leftChild(index)):
-            smallest = self.getLeftChildIndex(index)
-        
-        # check if right child has smaller value
-        if (self.hasRightChild(index) and self.seats[smallest] > self.rightChild(index)):
-            smallest = self.getRightChildIndex(index)
-        
-        # check if the smallest is not current index
-        # perform swap and recursivey call Heapify by traversing to bottom
-        if smallest != index:
-            self.swap(index, smallest)
-            self.heapifyDown(smallest)
-    
-    # function to print the list of available seats
-    def numberOfAvailableSeats(self):
-        return self.size
     
     # function to add seats
     def addSeats(self, extraSeats):
