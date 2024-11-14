@@ -19,6 +19,97 @@ class RedBlackTree:
         # root node
         self.root = self.EXT_NODE
     
+    # function to perform Left rotation
+    def leftRotate(self, x):
+        # assume there are 3 nodes...
+        # grandparent (x) -> parent (y) -> node
+        # when left rotate is called
+        # parent (y) will move to top
+        # it will have new left pointer to grandparent (x)
+        # while doing this old y.left should be transfer to x.right
+        # once this is done, update parent pointer mappings
+        y = x.right
+        x.right = y.left
+        if y.left != self.EXT_NODE:
+            y.left.parent = x
+        y.parent = x.parent
+        if x.parent is None:
+            self.root = y
+        elif x == x.parent.left:
+            x.parent.left = y
+        else:
+            x.parent.right = y
+        y.left = x
+        x.parent = y
+
+    # function to perform right rotation
+    def rightRotate(self, x):
+        # assume there are 3 nodes...
+        # grandparent (x) -> parent (y) -> node
+        # when right rotate is called
+        # parent (y) will move to top
+        # it will have new right pointer to grandparent (x)
+        # while doing this old y.right should be transfer to x.left
+        # once this is done, update parent pointer mappings
+        y = x.left
+        x.left = y.right
+        if y.right != self.EXT_NODE:
+            y.right.parent = x
+        y.parent = x.parent
+        if x.parent is None:
+            self.root = y
+        elif x == x.parent.right:
+            x.parent.right = y
+        else:
+            x.parent.left = y
+        y.right = x
+        x.parent = y
+
+    # function to search a node from ROOT node
+    def search(self, userId):
+        return self.findNode(self.root, userId)
+
+    # function to find a node from given node
+    def findNode(self, node, userId):
+        # print(userId, type(userId), node.userId, type(node.userId))
+        while node != self.EXT_NODE and userId != node.userId:
+            # print("sank")
+            if userId < node.userId:
+                node = node.left
+            else:
+                node = node.right
+        return node
+
+    # function to handle pointer transfers after deletion
+    # is called on nodes with degree 1 or 0
+    def swapNodes(self, delNode, childNode):
+        # if node 
+        if delNode.parent is None:
+            self.root = childNode
+        elif delNode == delNode.parent.left:
+            delNode.parent.left = childNode
+        else:
+            delNode.parent.right = childNode
+        childNode.parent = delNode.parent
+
+    # function to find minimum value in RBT
+    # minimum value in RBT will be always in the 
+    # lowest node along leftmost path
+    def minimum(self, node):
+        while node.left != self.EXT_NODE:
+            node = node.left
+        return node
+    
+    # function to perform in order traversal on the RBT
+    # this function was used for debugging purpose
+    # if we feel there is any discrepency after executing any command from the output file
+    # we can call inorder traversal after that command execution
+    def inorderTraversal(self, node):
+        if node is not None:
+            self.inorderTraversal(node.left)
+            print(node.userId, " ", node.seatId, "...", end=" ")
+            self.inorderTraversal(node.right)
+
     # function to insert a user in RBT 
     def insert(self, userId, seatId):
         # create new node, assign external nodes as left and right childs
@@ -147,23 +238,39 @@ class RedBlackTree:
     # function to delete the user node from RBT
     def deleteNode(self, node):
         y_original_color = node.color
+
+        # if node's left pointer is external node
+        # that mean node has either degree1 or 0
+        # replace the node with it's right child 
+        # if degree is 0, we will still have external node to replace
         if node.left == self.EXT_NODE:
+            # pointer to right node, as we have to call 
+            # deleteFix later on this node
             x = node.right
-            self.transplant(node, node.right)
-        elif node.right == self.EXT_NODE:
+
+            # replace the node with it's right child
+            self.swapNodes(node, node.right)
+        elif node.right == self.EXT_NODE: # same as above just for right child
             x = node.left
-            self.transplant(node, node.left)
+            self.swapNodes(node, node.left)
         else:
+            # if we entered here, that means we have a node with degree 2
+            # replace node with the minimum element from it's right subtree
+            # remove this minimum element node
+            # then call fixDelete method
             y = self.minimum(node.right)
             y_original_color = y.color
             x = y.right
             if y.parent == node:
                 x.parent = y
             else:
-                self.transplant(y, y.right)
+                self.swapNodes(y, y.right)
                 y.right = node.right
                 y.right.parent = y
-            self.transplant(node, y)
+            
+            # call this function to replace the deleting node
+            # with minimum node in it's right subtree
+            self.swapNodes(node, y)
             y.left = node.left
             y.left.parent = y
             y.color = node.color
@@ -176,30 +283,45 @@ class RedBlackTree:
         if y_original_color == 'black':
             self.fixDelete(x)
 
+    # function to fix any discrepancy in RBT after delete node call
     def fixDelete(self, x):
         while x != self.root and x.color == 'black':
             if x == x.parent.left:
                 sibling = x.parent.right
+                # if x's sibling is red
+                # make it black and mark x's parent as red
+                # perform left rotation on x's parent
+                # change mapping of x's sibling pointer
                 if sibling.color == 'red':
                     sibling.color = 'black'
                     x.parent.color = 'red'
                     self.leftRotate(x.parent)
                     sibling = x.parent.right
+                
+                # if both of x's siblings are black
+                # then make sibling color as red
                 if sibling.left.color == 'black' and sibling.right.color == 'black':
                     sibling.color = 'red'
                     x = x.parent
                 else:
+                    # if x's sibling's right child is black 
+                    # then make it's left child also black
+                    # call right rotation on x's sibling and change sibling mapping
                     if sibling.right.color == 'black':
                         sibling.left.color = 'black'
                         sibling.color = 'red'
                         self.rightRotate(sibling)
                         sibling = x.parent.right
+                    
+                    # make color adjustments for x's sibling and x's parent color
                     sibling.color = x.parent.color
                     x.parent.color = 'black'
                     sibling.right.color = 'black'
+                    # perform left rotate on x's parent
                     self.leftRotate(x.parent)
                     x = self.root
             else:
+                # similar to above steps 
                 sibling = x.parent.left
                 if sibling.color == 'red':
                     sibling.color = 'black'
@@ -221,76 +343,3 @@ class RedBlackTree:
                     self.rightRotate(x.parent)
                     x = self.root
         x.color = 'black'
-
-    def leftRotate(self, x):
-        y = x.right
-        x.right = y.left
-        if y.left != self.EXT_NODE:
-            y.left.parent = x
-        y.parent = x.parent
-        if x.parent is None:
-            self.root = y
-        elif x == x.parent.left:
-            x.parent.left = y
-        else:
-            x.parent.right = y
-        y.left = x
-        x.parent = y
-
-    # function to perform right rotation
-    def rightRotate(self, x):
-        y = x.left
-        x.left = y.right
-        if y.right != self.EXT_NODE:
-            y.right.parent = x
-        y.parent = x.parent
-        if x.parent is None:
-            self.root = y
-        elif x == x.parent.right:
-            x.parent.right = y
-        else:
-            x.parent.left = y
-        y.right = x
-        x.parent = y
-
-    # function to search a node
-    def search(self, userId):
-        return self.findNode(self.root, userId)
-
-    # function to find a node 
-    def findNode(self, node, userId):
-        # print(userId, type(userId), node.userId, type(node.userId))
-        while node != self.EXT_NODE and userId != node.userId:
-            # print("sank")
-            if userId < node.userId:
-                node = node.left
-            else:
-                node = node.right
-        return node
-
-    def transplant(self, u, v):
-        if u.parent is None:
-            self.root = v
-        elif u == u.parent.left:
-            u.parent.left = v
-        else:
-            u.parent.right = v
-        v.parent = u.parent
-
-    # function to find minimum value in RBT
-    # minimum value in RBT will be always in the 
-    # lowest node along leftmost path
-    def minimum(self, node):
-        while node.left != self.EXT_NODE:
-            node = node.left
-        return node
-    
-    # function to perform in order traversal on the RBT
-    # this function was used for debugging purpose
-    # if we feel there is any discrepency after executing any command from the output file
-    # we can call inorder traversal after that command execution
-    def _inorder_traversal(self, node):
-        if node is not None:
-            self._inorder_traversal(node.left)
-            print(node.userId, " ", node.seatId, "...", end=" ")
-            self._inorder_traversal(node.right)
