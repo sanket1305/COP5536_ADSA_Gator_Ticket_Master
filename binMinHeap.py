@@ -3,8 +3,6 @@ class MinHeap:
         self.seats = []
         for i in range(1, maxSize + 1):
             self.seats.append(i)
-        # print("hello", self.seats)
-        # self.seats = [0] * maxSize    # to store all the elements
         self.maxSize = maxSize          # maximum capacity of the heap
         self.size = maxSize                   # initial size of heap (i.e. 0)
     
@@ -25,6 +23,9 @@ class MinHeap:
         parentIndex = self.getParentIndex(index)
         if parentIndex >= 0:
             return True
+        
+        # if calculated parent index < 0 that means 
+        # the node does not have parent
         return False
     
     # function to check if index has left child
@@ -32,6 +33,9 @@ class MinHeap:
         childIndex = self.getLeftChildIndex(index)
         if childIndex < self.size:
             return True
+        
+        # if calculated left child index < 0 that means 
+        # the node does not have left child
         return False
     
     # function to check if index has right child
@@ -39,6 +43,9 @@ class MinHeap:
         childIndex = self.getRightChildIndex(index)
         if childIndex < self.size:
             return True
+        
+        # if calculated right child index < 0 that means 
+        # the node does not have right child
         return False
     
     # def parent(index)... to get parent value
@@ -67,22 +74,28 @@ class MinHeap:
     def insert(self, data):
         if self.isFull():
             raise("Heap is Full")
-        # print(len(self.seats), self.size)
+        
+        # insert new/vacant seatId into heap at the end
         self.seats.append(data)
         self.size += 1
+
         # now we need to ensure that data is sorted in right position
         self.heapifyUp(self.size - 1)
     
     # function to sort the data in right position
     def heapifyUp(self, index):
+        # keep comparing values with parent (until we reach the root)
+        # perform swapping if required (to satisfy mean Heap property)
+        # move one level up
         if(self.hasParent(index) and self.parent(index) > self.seats[index]):
             self.swap(self.getParentIndex(index), index)
             self.heapifyUp(self.getParentIndex(index))
     
     # function to remove min element from the binary heap
     def removeMin(self):
+        # debugger to check if there is invalid remove operation called
         if self.size == 0:
-            raise("Empty Heap")
+            print("Empty Heap")
         data = self.seats[0]
 
         # replace the root, with the last element in heap array
