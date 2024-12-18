@@ -31,7 +31,7 @@ Gator Ticket Master is a **priority-based seat reservation system** designed for
 ### **2. Installation**
 Clone this repository:
 ```bash
-git clone https://github.com/YourUsername/GatorTicketMaster.git
+git clone https://github.com/sanket1305/COP5536_ADSA_Gator_Ticket_Master.git
 cd GatorTicketMaster
 ```
 
